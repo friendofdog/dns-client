@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
 set -eu -o pipefail
 
+die() {
+    local exitcode=$1
+    echo 2>&1 ERROR: "$@"
+    exit $exitcode
+}
+
 basedir=$(cd "$(dirname "$0")" && pwd -P)
 
 cd "$basedir"
 . ./activate
 pytest -q "$@"
+python dns_client.py > ./.build/dns_client.out || die 1 FAILED
 echo OK
