@@ -12,5 +12,11 @@ basedir=$(cd "$(dirname "$0")" && pwd -P)
 cd "$basedir"
 . ./activate
 pytest -q "$@"
-python dns_client.py > ./.build/dns_client.out || die 1 FAILED
+
+out="$basedir/.build/dns_client.out"
+args="-d yahoo.com -r A -s 8.8.8.8"
+python dns_client.py $args > "$out" || die 1 'FAILED: bad exit'
+#python dns_client.py $args
+#grep -s 'yahoo.com mail is handled by' "$out" || die 1 'FAILED: bad output'
+
 echo OK
