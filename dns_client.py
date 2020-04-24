@@ -2,12 +2,10 @@ import dns.resolver
 import argparse
 
 def get_records(args):
-    print(args)
     domain, record, server = args.values()
     server = (server,)
     resolver = dns.resolver.Resolver(configure=False)
     resolver.nameservers = server
-    print(domain, record)
     answer = resolver.query(domain, record)
     return answer
 
@@ -23,6 +21,8 @@ def get_query_args():
 if __name__ == "__main__":
     query_args = get_query_args()
     records = get_records(query_args)
+    record_set = []
     for record in records:
-        print(record)
+        record_set.append(record.to_text())
+    print(record_set)
 
