@@ -9,12 +9,12 @@ def get_records(args):
     answer = resolver.query(domain, record)
     return answer
 
-def get_query_args():
+def get_query_args(test_args=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--domain', help="domain to query")
     parser.add_argument('-r', '--record', help="dns record type")
     parser.add_argument('-s', '--server', help="server ip address")
-    args = parser.parse_args()
+    args = parser.parse_args(test_args)
     args_dict = vars(args)
     return args_dict
 
