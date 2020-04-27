@@ -1,6 +1,6 @@
 # content of dns_client.py
 
-from dns_client import get_records, get_query_args
+from dns_client import get_records, parseargs
 import dns.resolver
 import mock
 from mock import patch
@@ -21,12 +21,12 @@ def test_get_records():
             = re.match(r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$", str(ip))
         assert bool(match)
 
-def test_get_query_args():
-    query_args = get_query_args(['-d=google.com', '-r=A', '-s=8.8.8.8'])
+def test_parseargs():
+    args = parseargs(['-d=google.com', '-r=A', '-s=8.8.8.8'])
     #   function returns a dictionary
-    assert isinstance(query_args, dict)
+    assert isinstance(args, dict)
     #   dictionary contains appropriate keys / values
-    assert query_args['domain'] == 'google.com'
-    assert query_args['record'] == 'A'
-    assert query_args['server'] == '8.8.8.8'
+    assert args['domain'] == 'google.com'
+    assert args['record'] == 'A'
+    assert args['server'] == '8.8.8.8'
 
