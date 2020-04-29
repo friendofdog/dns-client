@@ -18,12 +18,15 @@ def get_records(args):
     answer = resolver.query(domain, record)
     return answer
 
+def make_record_list(records):
+    record_list = []
+    for record in records:
+        record_list.append(record.to_text())
+    return record_list
 
 if __name__ == "__main__":
     args = parse_args()
     records = get_records(args)
-    record_set = []
-    for record in records:
-        record_set.append(record.to_text())
+    record_set = make_record_list(records)
     print(record_set)
 

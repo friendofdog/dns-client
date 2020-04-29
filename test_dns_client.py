@@ -1,11 +1,18 @@
 # content of dns_client.py
 
-from dns_client import parse_args, get_records
+from dns_client import parse_args, get_records, make_record_list
+from mock import patch
+import pytest
 import dns.resolver
 import mock
-from mock import patch
 import re
-import argparse
+
+def check_is_ip_address(addr):
+    length = len(str(addr).split('.')) == 4
+    match = bool(re.match(\
+        r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$", str(addr)\
+    ))
+    return (length and match)
 
 def test_parse_args():
     args = parse_args(['-d=google.com', '-r=A', '-s=8.8.8.8'])
@@ -30,4 +37,15 @@ def test_get_records():
             = re.match(r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$", str(ip))
         assert bool(match)
 
+def test_make_record_list():
+    with patch('dns.resolver.query', mock) as dns.resolver.query:
+        resolver = dns.resolver.Resolver(configure=False)
+        resolver.nameservers = ('8.8.8.8',)
+        records = resolver.query('google.com', 'A') 
+        record_list = make_record_list(records)
+        rec1 = record_list[0]
+        #   record list is type list
+        assert type(record_list) is list
+        #   first item in list is IP address
+        assert check_is_ip_address(rec1)
 
