@@ -1,11 +1,20 @@
 # content of dns_client.py
 
-from dns_client import get_records, parseargs
+from dns_client import parse_args, get_records
 import dns.resolver
 import mock
 from mock import patch
 import re
 import argparse
+
+def test_parse_args():
+    args = parse_args(['-d=google.com', '-r=A', '-s=8.8.8.8'])
+    #   function returns a dictionary
+    assert isinstance(args, dict)
+    #   dictionary contains appropriate keys / values
+    assert args['domain'] == 'google.com'
+    assert args['record'] == 'A'
+    assert args['server'] == '8.8.8.8'
 
 def test_get_records():
     with patch('dns.resolver.query', mock) as dns.resolver.query:
@@ -21,12 +30,4 @@ def test_get_records():
             = re.match(r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$", str(ip))
         assert bool(match)
 
-def test_parseargs():
-    args = parseargs(['-d=google.com', '-r=A', '-s=8.8.8.8'])
-    #   function returns a dictionary
-    assert isinstance(args, dict)
-    #   dictionary contains appropriate keys / values
-    assert args['domain'] == 'google.com'
-    assert args['record'] == 'A'
-    assert args['server'] == '8.8.8.8'
 

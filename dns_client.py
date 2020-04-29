@@ -1,15 +1,7 @@
 import dns.resolver
 import argparse
 
-def get_records(args):
-    domain, record, server = args.values()
-    server = (server,)
-    resolver = dns.resolver.Resolver(configure=False)
-    resolver.nameservers = server
-    answer = resolver.query(domain, record)
-    return answer
-
-def parseargs(args=None):
+def parse_args(args=None):
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--domain', help="domain to query")
     parser.add_argument('-r', '--record', help="dns record type")
@@ -18,8 +10,17 @@ def parseargs(args=None):
     args_dict = vars(args)
     return args_dict
 
+def get_records(args):
+    domain, record, server = args.values()
+    server = (server,)
+    resolver = dns.resolver.Resolver(configure=False)
+    resolver.nameservers = server
+    answer = resolver.query(domain, record)
+    return answer
+
+
 if __name__ == "__main__":
-    args = parseargs()
+    args = parse_args()
     records = get_records(args)
     record_set = []
     for record in records:
