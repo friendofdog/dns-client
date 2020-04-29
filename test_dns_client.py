@@ -14,6 +14,13 @@ def check_is_ip_address(addr):
     ))
     return (length and match)
 
+def make_dummy_dns_object():
+    with patch('dns.resolver.query', mock) as dns.resolver.query:
+        resolver = dns.resolver.Resolver(configure=False)
+        resolver.nameservers = ('8.8.8.8',)
+        records = resolver.query('google.com', 'A') 
+        return records
+
 def test_parse_args():
     args = parse_args(['-d=google.com', '-r=A', '-s=8.8.8.8'])
     #   function returns a dictionary
@@ -25,27 +32,19 @@ def test_parse_args():
 
 def test_get_records():
     with patch('dns.resolver.query', mock) as dns.resolver.query:
-        ip = get_records(
+        records = get_records(
             {'domain': 'google.com', 'record': 'A', 'server': '8.8.8.8'}
-        )[0]
-        #   class is the type which dns.resolver is expected to return
-        assert isinstance(ip, dns.rdtypes.IN.A.A)
-        #   ipv4 address can be split into four parts
-        assert len(str(ip).split('.')) == 4
-        #   parts of address match parts of ipv4 address
-        match \
-            = re.match(r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$", str(ip))
-        assert bool(match)
+        )
+        #   function returns list of expected object types
+        assert all(isinstance(rec, dns.rdtypes.IN.A.A) for rec in records)
+        #   all returned items are IP addresses
+        assert all(check_is_ip_address(rec) for rec in records)
 
 def test_make_record_list():
-    with patch('dns.resolver.query', mock) as dns.resolver.query:
-        resolver = dns.resolver.Resolver(configure=False)
-        resolver.nameservers = ('8.8.8.8',)
-        records = resolver.query('google.com', 'A') 
-        record_list = make_record_list(records)
-        rec1 = record_list[0]
-        #   record list is type list
-        assert type(record_list) is list
-        #   first item in list is IP address
-        assert check_is_ip_address(rec1)
+    records = make_dummy_dns_object()
+    record_list = make_record_list(records)
+    #   function returns list of strings
+    assert all(isinstance(rec, str) for rec in record_list)
+    #   all returned items are IP addresses
+    assert all(check_is_ip_address(rec) for rec in record_list)
 
