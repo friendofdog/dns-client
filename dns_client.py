@@ -18,7 +18,7 @@ def get_records(args):
     answer = resolver.query(domain, record)
     return answer
 
-def make_record_list(records):
+def records_to_text(records):
     record_list = []
     for record in records:
         record_list.append(record.to_text())
@@ -27,6 +27,6 @@ def make_record_list(records):
 if __name__ == "__main__":
     args = parse_args()
     records = get_records(args)
-    record_set = make_record_list(records)
+    record_set = records_to_text(records)
     print(record_set)
 

@@ -1,6 +1,6 @@
 # content of dns_client.py
 
-from dns_client import parse_args, get_records, make_record_list
+from dns_client import parse_args, get_records, records_to_text
 from mock import patch
 import pytest
 import dns.resolver
@@ -41,8 +41,8 @@ def test_get_records():
         #   all returned items are IP addresses
         [ assert_ipaddr(rec) for rec in records ]
 
-def test_make_record_list(dnsanswer):
-    record_list = make_record_list(dnsanswer)
+def records_to_text(dnsanswer):
+    record_list = records_to_text(dnsanswer)
     #   function returns list of strings
     assert all(isinstance(rec, str) for rec in record_list)
     #   all returned items are IP addresses
