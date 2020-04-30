@@ -14,6 +14,7 @@ def check_is_ip_address(addr):
     ))
     return (length and match)
 
+@pytest.fixture
 def make_dummy_dns_object():
     with patch('dns.resolver.query', mock) as dns.resolver.query:
         resolver = dns.resolver.Resolver(configure=False)
@@ -40,8 +41,8 @@ def test_get_records():
         #   all returned items are IP addresses
         assert all(check_is_ip_address(rec) for rec in records)
 
-def test_make_record_list():
-    records = make_dummy_dns_object()
+def test_make_record_list(make_dummy_dns_object):
+    records = make_dummy_dns_object
     record_list = make_record_list(records)
     #   function returns list of strings
     assert all(isinstance(rec, str) for rec in record_list)
