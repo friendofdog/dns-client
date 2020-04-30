@@ -7,12 +7,11 @@ import dns.resolver
 import mock
 import re
 
-def check_is_ip_address(addr):
-    length = len(str(addr).split('.')) == 4
-    match = bool(re.match(\
-        r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$", str(addr)\
-    ))
-    return (length and match)
+def assert_ipaddr(addr):
+    assert 4 == len(str(addr).split('.'))
+    assert re.match(
+        r"^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$", str(addr)
+    )
 
 @pytest.fixture
 def dnsanswer():
@@ -40,12 +39,12 @@ def test_get_records():
         #   function returns list of expected object types
         assert all(isinstance(rec, dns.rdtypes.IN.A.A) for rec in records)
         #   all returned items are IP addresses
-        assert all(check_is_ip_address(rec) for rec in records)
+        [ assert_ipaddr(rec) for rec in records ]
 
 def test_make_record_list(dnsanswer):
     record_list = make_record_list(dnsanswer)
     #   function returns list of strings
     assert all(isinstance(rec, str) for rec in record_list)
     #   all returned items are IP addresses
-    assert all(check_is_ip_address(rec) for rec in record_list)
+    [ assert_ipaddr(rec) for rec in record_list ]
 
