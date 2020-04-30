@@ -15,11 +15,12 @@ def check_is_ip_address(addr):
     return (length and match)
 
 @pytest.fixture
-def make_dummy_dns_object():
+def dnsanswer():
+    " The DNS resolver's answer to an A record query for google.com. "
     with patch('dns.resolver.query', mock) as dns.resolver.query:
         resolver = dns.resolver.Resolver(configure=False)
         resolver.nameservers = ('8.8.8.8',)
-        records = resolver.query('google.com', 'A') 
+        records = resolver.query('google.com', 'A')
         return records
 
 def test_parse_args():
@@ -41,9 +42,8 @@ def test_get_records():
         #   all returned items are IP addresses
         assert all(check_is_ip_address(rec) for rec in records)
 
-def test_make_record_list(make_dummy_dns_object):
-    records = make_dummy_dns_object
-    record_list = make_record_list(records)
+def test_make_record_list(dnsanswer):
+    record_list = make_record_list(dnsanswer)
     #   function returns list of strings
     assert all(isinstance(rec, str) for rec in record_list)
     #   all returned items are IP addresses
